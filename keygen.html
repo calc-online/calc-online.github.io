@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Генератор паролей</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      text-align: center;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .switch-container {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    .switch-container label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 20px;
+      transition: 0.4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+
+    input:checked + .slider {
+      background-color: orange;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .btn {
+      background-color: orange;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.1s ease-in-out;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .output-container {
+      margin-top: 20px;
+    }
+
+    .password-output {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+      word-wrap: break-word;
+      margin-bottom: 15px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Генератор паролей</h1>
+    <label for="length">Длина пароля</label>
+    <input type="number" id="length" min="4" max="32" value="12">
+
+    <div class="switch-container">
+      <label>
+        Заглавные буквы
+        <div class="switch">
+          <input type="checkbox" id="uppercase" checked>
+          <span class="slider"></span>
+        </div>
+      </label>
+      <label>
+        Строчные буквы
+        <div class="switch">
+          <input type="checkbox" id="lowercase" checked>
+          <span class="slider"></span>
+        </div>
+      </label>
+      <label>
+        Цифры
+        <div class="switch">
+          <input type="checkbox" id="numbers" checked>
+          <span class="slider"></span>
+        </div>
+      </label>
+      <label>
+        Специальные символы
+        <div class="switch">
+          <input type="checkbox" id="special" checked>
+          <span class="slider"></span>
+        </div>
+      </label>
+    </div>
+
+    <button class="btn" id="generate">Генерация</button>
+
+    <div class="output-container">
+      <div class="password-output" id="output"></div>
+      <button class="btn" id="copy">Скопировать</button>
+    </div>
+  </div>
+
+  <script>
+    const numbersCheckbox = document.getElementById("numbers");
+    const generateBtn = document.getElementById("generate");
+    const copyBtn = document.getElementById("copy");
+    const output = document.getElementById("output");
+    const lengthInput = document.getElementById("length");
+    const uppercaseCheckbox = document.getElementById("uppercase");
+    const lowercaseCheckbox = document.getElementById("lowercase");
+    const specialCheckbox = document.getElementById("special");
+
+    function generatePassword() {
+      const length = parseInt(lengthInput.value);
+      const useUppercase = uppercaseCheckbox.checked;
+      const useLowercase = lowercaseCheckbox.checked;
+      const useNumbers = numbersCheckbox.checked;
+      const useSpecial = specialCheckbox.checked;
+
+      const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lower = "abcdefghijklmnopqrstuvwxyz";
+      const numbers = "0123456789";
+      const special = "!@#$%^&*()_+-=[]{}|;:',.<>?";
+
+      let chars = "";
+      if (useUppercase) chars += upper;
+      if (useLowercase) chars += lower;
+      if (useNumbers) chars += numbers;
+      if (useSpecial) chars += special;
+
+      if (!chars) {
+        output.textContent = "Выберите хотя бы один параметр!";
+        return;
+      }
+
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      output.textContent = password;
+    }
+
+    function copyToClipboard() {
+      const password = output.textContent;
+      if (password && password !== "") {
+        navigator.clipboard.writeText(password).then(() => {
+          alert("Пароль скопирован!");
+        });
+      }
+    }
+
+    generateBtn.addEventListener("click", generatePassword);
+    copyBtn.addEventListener("click", copyToClipboard);
+  </script>
+</body>
+</html>
